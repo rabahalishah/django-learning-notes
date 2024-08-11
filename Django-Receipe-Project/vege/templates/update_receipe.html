@@ -1,0 +1,46 @@
+{% extends "base.html" %} {% block start %}
+
+<h1 class="col-6 mx-auto p-4">Update Receipe</h1>
+<!-- here enctype="multipart/form-data" for files-->
+<form
+  class="col-6 mx-auto card mb-5 p-5 shadow-lg"
+  method="post"
+  enctype="multipart/form-data"
+>
+  {% csrf_token %}
+  <!-- here you have to add csrf token while making post request so that django have idea that trustes server is sending data -->
+
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">New Receipe Name</label>
+    <input
+      type="text"
+      class="form-control"
+      id="name"
+      aria-describedby="emailHelp"
+      name="receipe_name"
+      value="{{receipe.receipe_name}}"
+    />
+  </div>
+  <div class="mb-3">
+    <label for="description" class="form-label">New Description</label>
+    <textarea
+      type="text"
+      class="form-control"
+      id="exampleInputPassword1"
+      name="receipe_description"
+    >
+{{receipe.receipe_description}}</textarea
+    >
+  </div>
+  <div class="mb-3">
+    <input
+      value="{{receipe.receipe_Image}}"
+      name="receipe_image"
+      type="file"
+      class="form-control"
+      id="file"
+    />
+  </div>
+  <button type="submit" class="btn btn-success">Update</button>
+</form>
+{% endblock %}

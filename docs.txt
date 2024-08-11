@@ -1,0 +1,2101 @@
+Django Course
+I am using ubuntu as an OS
+
+************Django project setup
+Make sure you have python3 installed. If not the run:
+Installing Python:
+
+sudo apt update
+sudo apt install python3
+python3 --verison
+
+
+Now before installing djagon you have to create a virtual environment. For that you have to install pip
+
+Installing PIP:
+sudo apt update
+sudo apt install python3-pip
+pip3 --verison
+
+Installing virtualenv:
+
+pip3 install virtualenv
+
+
+Now create a folder where you want to create your virtual enviroment:
+
+virtualenv -p python3 .
+
+Activating virtual env:
+
+source ./bin/activate
+
+Installing Django:
+
+pip3 install django
+django-admin --version
+
+now create a src folder and go into the src folder and run:
+
+django-admin startproject myproject .
+
+
+You are done!
+
+
+******************Running the django server
+Go to your project source folder and run: (make sure your vritual env is activate)
+
+python manage.py runserver
+
+**********Settings.py
+
+in your project folder there would be settings.py Here we can set all our settings to the project. Like secret keys and databases etc.
+
+once you had make changes you have to run:
+
+python manage.py migrate
+
+
+************Creating Django Apps/ Django built in apps
+
+You can think apps as the componets. If you would go into the django settings.py you might see the section of installed apps. There you can see already installed apps and you can add third party apps as well.
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]
+
+Creating a super user:
+
+run:
+python manage.py createsuperuser
+
+then give username, email, password
+
+
+Now go to 	http://127.0.0.1:8000/admin/
+
+and login
+
+Here django has created a user for me and stored it into the database automatically.
+
+
+Uptil now we have explored the following django builtin apps:
+
+'django.contrib.admin',
+'django.contrib.auth',
+
+************Creating custom apps:
+In django we can create as my apps we want. As we have already discussed that in django apps are components which then combine creates a full application. This helps us to keep our logic separated and clean.
+
+you can creat you app like that:
+
+pyhton manage.py startapp your_app_name
+
+after hitting enter you will see in you directory there will be a folder containing several files will be created. Now you can manage all your stuff there. There will be a file called models.py
+Here you will define your models (means you database related stuff). All models you will define here will be map through your database.
+
+
+after doing this you have to put the name of your app that you have created, in the installed apps section:
+
+Now wirte code for you app. Let say I want to create models for my product:
+
+from django.db import models
+
+# Create your models here.
+
+
+class Product(models.Model):
+    title = models.TextField()
+    description = models.TextField()
+    price = models.TextField()
+
+
+
+once you have done with your code. now you have to migrate for that you have to run:
+
+python manage.py makemigrations
+python manage.py migrate
+
+
+NOTE: Whenever we would make any changes in the model of our app we would have to run these following commands every time:
+python manage.py makemigrations
+python manage.py migrate
+
+//In models.py
+from django.db import models
+
+# Create your models here.
+
+
+class Product(models.Model):
+    title = models.TextField()
+    description = models.TextField()
+    price = models.TextField()
+    summary = models.TextField(default='This is a cool product.')
+
+
+
+// in admin.py
+from django.contrib import admin
+
+from .models import Product
+# Register your models here.
+
+
+admin.site.register(Product)
+
+
+
+Now again run:
+python manage.py makemigrations
+python manage.py migrate
+
+
+and go to the django admin http://127.0.0.1:8000/admin/ you will see a new app namely products:
+
+
+***********Adding objects to the model using django shell
+you can run django shell by running:
+
+python manage.py shell
+
+now you will be entered into the a shell:
+
+
+from products.models import Product // this is how you import your models in python shell
+
+Product.objects.all() //this is how you can get all your objects in product model
+
+Product.objects.create(title="another product", description= "another description", price="20.22", summary="another summary") //this is how you create new objects in your model
+
+
+NOTE: Uptil now we have learnt how to setup django projects, leanred about django setitngs and how to create our own django apps. We have also learnt that how to create models and how to import models in admin.py and also learnt about django shell and how to add objects to your model using shell and how to migrate your django app.
+
+Now its time to create a our model more realistic
+
+****************Addings realistic fields to our models (with deleting database):
+Here I am making changes. But before that I have deleted some files from migrations and even deleted my database file and then made changes and then migrated. The whole scenario is simple that I am creating my database and its models again.
+from django.db import models
+
+# Create your models here.
+
+
+class Product(models.Model):
+    title = models.CharField(max_length=120)
+    description = models.TextField(blank=True, null=True)
+    price = models.DecimalField(decimal_places=2, max_digits=10000)
+    summary = models.TextField()
+
+
+
+now agaim run
+
+python manage.py makemigrations
+python manage.py migrate
+
+
+
+************************Making changes to the column without deleting the database:
+from django.db import models
+
+# Create your models here.
+
+
+class Product(models.Model):
+    title = models.CharField(max_length=120)
+    description = models.TextField(blank=True, null=True)
+    price = models.DecimalField(decimal_places=2, max_digits=10000)
+    summary = models.TextField()
+    featured = models.BooleanField() // <--- Added this field
+    
+    
+
+NOTE: Django doesn't know how many objects were already present in the database with already existing 4 properties. What should be the value of the fifth property in already existing objects in database? Here you have to provide a default value. and then you can run:
+
+python manage.py makemigrations
+python manage.py migrate
+
+IMPORTANT: You might have noticed that on evey changes you made and then make migrations. You will see an addition of new file containing the changes you made.
+
+
+*****************Custom pages in django
+You have seen a folder called views. In this page you have define view for your app. lets create a new app and make a custom page
+
+python manage.py startapp pages
+
+Pages folder must be created. Now go to the views.py
+Dont forget to add this pages app in your installed app list of settings.py
+
+// in settings.py:
+
+//...rest of the code
+
+# Application definition
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    # My Own app
+
+    'products',
+    'pages',
+]
+
+//...rest of the code
+
+
+// inside views.py of Pages app
+
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+
+def home_view():
+    return HttpResponse("<h1>Hello World</h1>")
+
+***Now its time to define url for this page so that we can see this page. 
+For that go to the urls.py folder in your trydjango app
+
+// in urls.py
+
+from django.contrib import admin
+from django.urls import path
+from pages.views import home_view // <--added this line
+
+urlpatterns = [
+    path('', home_view, name='home'), //<--added this line
+    path('admin/', admin.site.urls),
+]
+
+
+NOTE: You can add as many views you want. Lets add another view let say contacts in the pages.views
+
+//in views.py of pages app
+
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+
+
+def home_view(request, *args, **kwargs):
+    print("args, kwargs: ", args, kwargs)
+    print("REQUEST: ", request)
+    return HttpResponse("<h1>Hello World</h1>")
+
+
+def contact_view(request, *args, **kwargs):
+    print("args, kwargs: ", args, kwargs)
+    print("REQUEST: ", request)
+    print(args, kwargs)
+    return HttpResponse("<h1>Contact Page</h1>")
+
+
+// In urls.py of trydjango:
+
+from django.contrib import admin
+from django.urls import path
+from pages.views import home_view, contact_view
+
+urlpatterns = [
+    path('', home_view, name='home'),
+    path('contact/', contact_view, name='contact'),
+    path('admin/', admin.site.urls),
+]
+
+
+
+IMPORTANT: Here you have to notice a behaviour that whenever we hit the defined url something is request and the response is given. In our case the response is an html page. We can use this request response to create some desired functions.
+
+
+
+
+************Django Templates
+Creating django templates is simply like creating html files in a "templates" folder which will be located inside source folder. And then giving the address of this folder in templates section of settings.py. And in views now instead of returning httpResponse you have to response render(request, "anyfile.html", {})
+
+//inside views of pages
+from django.shortcuts import render
+
+# Create your views here.
+def home_view(request, *args, **kwargs):
+    print("args, kwargs: ", args, kwargs)
+    print("REQUEST: ", request)
+    return render(request, "home.html", {}) # <--added this lines
+
+
+def contact_view(request, *args, **kwargs):
+    print("args, kwargs: ", args, kwargs)
+    print("REQUEST: ", request)
+    print(args, kwargs)
+
+    return render(request, "contact.html", {}) # <--added this lines
+    
+NOTE: Here {} are the dictionaries (objects) in python. We will discuss about them later
+    
+// now create a templates folder inside src folder and make home.html and contact.html files in it.
+
+//inside settings.py
+//.....rest of this code
+
+import os
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, "templates")], #<-- Added this line
+        'APP_DIRS': True,
+        'OPTIONS': {
+            '_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+//.....rest of this code
+
+
+now on hitting the defined urls inside urls.py these templates will render
+
+***************Django Template inheritance
+
+using this you can share data across several html pages
+simply create an base.html file inside templates folder
+
+// inside base.html
+<!DOCTYPE html>
+<html>
+  <header>
+    <title>Django Template inheritance</title>
+  </header>
+  <body>
+    <h1>This line is from base.html</h1>
+    {% block content %}
+    This space inside these wrapper will work as a placeholder
+    {% endblock content %}
+    
+  </body>
+</html>
+
+
+//inside home.html
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Home Page</h1>
+<h1>This is home template</h1>
+{% endblock content %}
+
+
+//inside contact.html
+{% extends "base.html" %} {% block content %}
+<h1>Contact Page</h1>
+<h1>This is contact template</h1>
+{% endblock content %}
+
+
+
+**************Include tag in Django template inheritance 
+Let say you want to inherit another html file inside one. Like NavBar will be using in all files so this is a good idea to create a separate file of navBar.html and then import it using include tag in base.html
+
+This is exactly like using components in react.
+
+//inside base.html
+<!DOCTYPE html>
+<html>
+  <header>
+    <title>Django Template inheritance</title>
+  </header>
+  <body>
+      
+      {% include "navBar.html" %} <---Added this line
+
+
+    <h1>This line is from base.html</h1>
+
+    {% block content %}
+    This space inside these wrapper will work as a placeholder
+    {% endblock content %}
+    
+  </body>
+</html>
+
+
+*****************Context in Django Templates
+This context is very helpful to pass data in these templates through views. As we know that we use our render() fucntion inside views.py and there we have {} this dictionary option where we can pass our data.
+
+
+//In views.js:
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+
+
+def home_view(request, *args, **kwargs):
+    print("args, kwargs: ", args, kwargs)
+    print("REQUEST: ", request)
+    my_context = {
+        "about_home": "This is my home",
+        "more_information": "This house is located in Los angelas"
+    }
+    return render(request, "home.html", my_context) #<-- passing context in render function
+
+
+def contact_view(request, *args, **kwargs):
+    print("args, kwargs: ", args, kwargs)
+    print("REQUEST: ", request)
+    print(args, kwargs)
+    my_context = {
+        "about_us": "This is about us"
+
+    }
+    return render(request, "contact.html", my_context) #<-- passing context in render function
+
+
+# In home.html
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Home Page</h1>
+<h1>This is home template</h1>
+
+{{about_home}} #<-- this is how we can use the context. Keys will be the name of the variables to access their values
+{{more_information}} #<-- this is how we can use the context. Keys will be the name of the variables to access their values
+
+{% endblock content %}
+
+
+# In contact.html
+
+{% extends "base.html" %} {% block content %}
+<h1>Contact Page</h1>
+<h1>This is contact template</h1>
+
+{{about_us}} {% endblock content %}
+
+
+*****************Using loop in django templates
+What if we have data coming from the database in the form of a list and then we want to loop over the data. So below is the method you can apply for loop inside django templates:
+// In views.py of pages
+
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+
+
+def home_view(request, *args, **kwargs):
+    print("args, kwargs: ", args, kwargs)
+    print("REQUEST: ", request)
+    my_context = {
+        "about_home": "This is my home",
+        "more_information": "This house is located in Los angelas",
+        "my_list": [12, 13, 14, 15] #<-- here is the list that we want to render
+    }
+    return render(request, "home.html", my_context)
+
+
+def contact_view(request, *args, **kwargs):
+    print("args, kwargs: ", args, kwargs)
+    print("REQUEST: ", request)
+    print(args, kwargs)
+    my_context = {
+        "about_us": "This is about us"
+
+    }
+    return render(request, "contact.html", my_context)
+
+
+// In home.html
+
+{% extends 'base.html' %} {% block content %}
+<h1>Home Page</h1>
+<h1>This is home template</h1>
+{{about_home}}
+
+{{more_information}} 
+
+
+
+{{my_list}} 
+
+{% for sub_items in my_list %} //this is how we start loop in django template html page
+<li>
+    {{sub_items}}
+</li>
+{% endfor %} // in django template we also have to close the loop
+
+
+{% endblock content %}
+
+
+
+NOTE: You might have been asking yourself that why we are using django templates and why we are rendering our data using the context and applying loops over it. So lets understand it with a practicle application. In real life the data will be coming from the database via models.py and views.py we handle all our logic stuff and then we pass this data that is coming from the database to the django templates where we can conditionally render it. If there is a case that when we are making our front end using django template. But in most of the cases you will create APIs and then those APIs will be used in you front end applications.
+
+
+***************Conditions in django templates
+
+{% extends 'base.html' %} {% block content %}
+<h1>Home Page</h1>
+<h1>This is home template</h1>
+{{about_home}}
+
+{{more_information}} 
+
+
+
+{{my_list}} 
+
+{% for sub_items in my_list %}
+    {% if sub_items == 1422 %} #<-- If condition started
+    <p>14 number detected</p>  # On this statement becomes true then render this
+    {% elif sub_items == 1222 %}
+    <p>12 number detected</p>
+    {% else %}
+    <p>Else conditioned run</p>
+    {% endif %} 		#<-- If condition ended
+<li>
+    {{sub_items}}
+</li>
+{% endfor %}
+
+
+{% endblock content %}
+
+
+
+*********Django templates built-in tags
+Built-in Filters:
+
+{% extends 'base.html' %} {% block content %}
+<h1>Home Page</h1>
+<h1>This is home template</h1>
+{{about_home}}
+
+{{more_information}} 
+
+
+
+{{my_list}} 
+
+{% for sub_items in my_list %}
+    {% if sub_items == 14 %}
+    <p>14 number detected now adding 20 into it, {{sub_items|add:20}}</p>  #<-- value|add:20 is built in filter that adds 20 or anynumber to the value left to the pipe |
+    {% elif sub_items == 1222 %}
+    <p>12 number detected</p>
+    {% else %}
+    <p>Else conditioned run</p>
+    {% endif %}
+<li>
+    {{sub_items}}
+</li>
+{% endfor %}
+
+
+{% endblock content %}
+
+
+
+********************Retrieving data from the backend
+First of all you must have a model.
+
+// In models.py of product app:
+from django.db import models
+
+# Create your models here.
+
+
+class Product(models.Model):
+    title = models.CharField(max_length=120)
+    description = models.TextField(blank=True, null=True)
+    price = models.DecimalField(decimal_places=2, max_digits=10000)
+    summary = models.TextField()
+    featured = models.BooleanField()
+
+
+
+// In views.py of Product app
+
+from django.shortcuts import render
+from .models import Product     #<-- This is how you will import you models
+
+# Create your views here.
+
+
+def product_detail_view(request):
+    obj = Product.objects.get(id=3)  <-- Here we are selecting our product by using its id and storing it into an obj variable
+    context = {
+        'title': obj.title,
+        'description': obj.description,
+        'price': obj.price,
+        'summary': obj.summary,
+        'featured': obj.featured,
+
+    }
+
+    return render(request, "product/detail.html", context)
+    
+
+
+// In Templates folder create a product folder and inside that create detail.html
+
+{% extends 'base.html' %} {% block content %}
+
+<h3>below data is coming from the database:</h3>
+<h1>{{title}}</h1>
+<p>{{description}}</p>
+<p>{{price}}</p>
+<p>{{summary}}</p>
+<p>{{featured}}</p>
+{% endblock content %}
+
+
+// in urls.py
+
+from django.contrib import admin
+from django.urls import path
+from pages.views import home_view, contact_view
+from products.views import product_detail_view
+
+urlpatterns = [
+    path('', home_view, name='home'),
+    path('contact/', contact_view, name='contact'),
+    path('product/', product_detail_view, name='product'), #<-- defined url
+    path('admin/', admin.site.urls),
+]
+
+
+now search localhost:8000/product
+
+
+*****************Better way to define models data
+
+// In views.py of product ap[:
+from django.shortcuts import render
+from .models import Product
+
+# Create your views here.
+
+
+def product_detail_view(request):
+    obj = Product.objects.get(id=3)
+    context = {
+        'objects': obj
+
+    }
+
+    return render(request, "product/detail.html", context)
+
+// in detail.html
+
+{% extends 'base.html' %} {% block content %}
+
+<h3>below data is coming from the database:</h3>
+<h1>{{objects.title}}</h1>
+<p>{{objects.description}}</p>
+<p>{{objects.price}}</p>
+<p>{{objects.summary}}</p>
+<p>{{objects.featured}}</p>
+
+{% endblock content %}
+
+
+*************How to create a form in django and how to enter data into that model?
+First of all you must have a model:
+
+//In models.py of product app:
+from django.db import models
+
+# Create your models here.
+
+
+class Product(models.Model):
+    title = models.CharField(max_length=120)
+    description = models.TextField(blank=True, null=True)
+    price = models.DecimalField(decimal_places=2, max_digits=10000)
+    summary = models.TextField()
+    featured = models.BooleanField(default=False)
+
+
+//Create a forms.py file
+
+
+from django import forms
+from .models import Product
+
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = [    #<-- Here I have added only selective fields. You can add as much as you can from your models.py
+            'title',
+            'description',
+            'price'
+        ]
+
+
+// In views.py
+from django.shortcuts import render
+from .models import Product
+from .forms import ProductForm
+
+# Create your views here.
+
+def product_create_view(request):
+    form = ProductForm(request.POST or None)  #<-- grabbing data from the post request
+    if form.is_valid():  		      #<-- checcking whether the form is valid or not
+        form.save()      		      #<-- after validation saving the form data
+        form = ProductForm()		      #<-- clearing the form state
+
+    context = {
+        'form': form,                         #<-- passing form data once, 
+
+    }
+
+    return render(request, "product/product_create.html", context)
+    
+    
+    
+    
+ 
+ ****************Saving data into database from the raw HTMl form (Bad way to store data in DB):
+ 
+
+// In views.py of Product
+def product_create_view(request):
+    if request.method == 'POST':
+        my_new_title = request.POST.get('title')
+        print(my_new_title)
+        # Product.objects.create(title=my_new_title) #<-- this is how you can store data in database
+
+    context = {}
+
+    return render(request, "product/product_create.html", context)
+    
+    
+// In product_create.html
+{% extends 'base.html' %} {% block content %}
+
+<form action="." method="POST"> {% csrf_token %}  #<-- here in actions we can send our input data to the url entered in the actions e.g actions="http://www.google.com/search"
+  <input placeholder="Enter title" type="text" name="title" />
+  <input  type="submit" value="save" />
+</form>
+{% endblock content %}
+
+
+NOTE: This is not a good way to store data in database. Because here we are not validating the data before saving it into the database. Here we have simply created an HTML form and get that from the request argument.
+
+***************Pure Django forms
+
+// In forms.py of product app
+class RawProductFrom(forms.Form):
+    title = forms.CharField()
+    description = forms.CharField()
+    price = forms.DecimalField()
+    
+    
+// In views.py of product app
+from .forms import RawProductFrom
+from django.shortcuts import render
+from .models import Product
+
+# Django pure forms
+def product_create_view(request):
+    my_form = RawProductFrom() 
+    if request.method == 'POST':
+        my_form = RawProductFrom(request.POST)  #<-- grabbing the post data
+        if my_form.is_valid():
+            print(my_form.cleaned_data)
+
+        Product.objects.create(**my_form.cleaned_data)  #<--passing the cleaned data as an argument ** to the product model
+
+    context = {"form": my_form}
+
+    return render(request, "product/product_create.html", context)    
+    
+// In product_create.html
+
+{% extends 'base.html' %} {% block content %}
+
+<form method="POST">
+  {% csrf_token %} {{ form.as_p}}
+
+  <input type="submit" value="save" />
+</form>
+{% endblock content %}
+
+
+
+******************Form widgets:
+Using form widgets you can apply attributes to your html fields
+// In forms.py
+class RawProductFrom(forms.Form):
+    title = forms.CharField()
+    description = forms.CharField(required=False, widget=forms.Textarea( 
+        attrs={"placeholder": "My Description",
+               "class": "new-class-name",
+               "rows": 20,
+               "columns": 100
+               }))
+    price = forms.DecimalField()
+    
+    
+
+
+
+NOTE: Since we are dealing with pure Django forms so we will be managing our html properties of HTML using django builtin features
+    
+
+********************Django Forms validations
+
+class ProductForm(forms.ModelForm):
+
+    title = forms.CharField()                          #<-- Here we are overriding our title, description and price fields
+    description = forms.CharField(required=False, widget=forms.Textarea(
+        attrs={"placeholder": "My Description",
+               "class": "new-class-name",
+               "rows": 20,
+               "columns": 100
+               }))
+    price = forms.DecimalField()
+
+    class Meta:
+        model = Product
+        fields = [
+            'title',
+            'description',
+            'price'
+        ]
+    # Custom validations <-- here before submitting the form we are checking whether the title contains rabah or not.
+
+    def cleaned_title(self, *args, **kwargs):
+        title = self.cleaned_data.get("title")
+        if not "rabah" in title:
+            raise forms.ValidationError("This is not a valid title")
+        else:
+            return title
+
+*********************Initial value of the form
+
+You can give initial value to the form with the help of using views.py file:
+
+// In views.py of Product app:
+def product_create_view(request):
+    initial_data = {
+        'title': "This is my initial title"
+    }
+
+    form = ProductForm(request.POST or None, initial=initial_data)
+    if form.is_valid():
+        form.save()
+        form = ProductForm()
+
+    context = {
+        'form': form,
+
+    }
+
+    return render(request, "product/product_create.html", context)
+    
+    
+*****************Initial value to a specific object:
+
+def product_create_view(request):
+    initial_data = {
+        'title': "This is my initial title"
+    }
+    obj = Product.objects.get(id=1)
+    form = ProductForm(request.POST or None,
+                       instance=obj, initial=initial_data)  #<--using instance attribute
+    if form.is_valid():
+        form.save()
+        form = ProductForm()
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, "product/product_create.html", context)
+    
+    
+ *******************Dynamic URLS
+ 
+ Dynamic url is very simle. All you have to do some change in the urls.py like below:
+ 
+// In urls.py:
+
+from django.contrib import admin
+from django.urls import path
+
+from products.views import dynamic_lookup_view
+
+urlpatterns = [
+
+    path('product/<int:my_id>/', dynamic_lookup_view, name='dynamic'), # <-- here we are adding my_id a dynamica argument which we can access in our views
+    path('admin/', admin.site.urls),
+]
+
+// In views,py
+
+from django.shortcuts import render
+from .models import Product
+def dynamic_lookup_view(request, my_id): #<-- this my_id argument is coming from dynamic url
+    obj = Product.objects.get(id=my_id)
+    context = {
+        "object": obj
+    }
+    return render(request, "product/product_detail.html", context)
+
+// In product_detail.html
+{% extends 'base.html' %} {% block content %}
+
+<h3>below data is coming from the database:</h3>
+<h1>{{object.title}}</h1>
+<p>{{object.description}}</p>
+<p>{{object.price}}</p>
+<p>{{object.summary}}</p>
+<p>{{object.featured}}</p>
+{% endblock content %}
+
+
+****************Handling page not found
+There are two ways to do that:
+
+1) using  get_object_or_404 from django.shortcuts
+2) Http404 from djnago.http
+
+
+***Method 1:
+from django.shortcuts import render, get_object_or_404
+from .models import Product
+def dynamic_lookup_view(request, my_id): # <-- this my_id argument is coming from dynamic url
+    obj = get_object_or_404(Product, id=my_id)
+    context = {
+        "object": obj
+    }
+    return render(request, "product/product_detail.html", context)
+    
+    
+***Method 2:
+from django.shortcuts import render
+from django.http import Http404
+from .models import Product
+
+def dynamic_lookup_view(request, my_id):
+    try:
+        obj = Product.objects.get(id=my_id)
+    except Product.DoesNotExist:
+        raise Http404
+
+    context = {
+        "object": obj
+    }
+    return render(request, "product/product_detail.html", context)
+
+    
+***************Deleting objects using dynamic url in django:
+// In views.py of product app:
+
+def dynamic_delete_view(request, my_id):
+    obj = get_object_or_404(Product, id=my_id)
+    if request.method == "POST":
+        # confirming post request then deleting the object
+        obj.delete()
+        return redirect('../')
+
+    context = {
+        "object": obj
+    }
+    return render(request, "product/product_delete.html", context)
+    
+    
+ // In product_delete.html
+ 
+ {% extends 'base.html' %} {% block content %}
+<form method="POST">
+  {% csrf_token %}
+  <h1>Do you want to delete this product "{{object.title}}" ?</h1>
+  <p>
+    <input type="submit" value="Yes" />
+    <a href="../">Cancel</a>
+  </p>
+</form>
+
+{% endblock content %}
+
+// In urls.py
+
+from django.contrib import admin
+from django.urls import path
+from products.views import dynamic_lookup_view, dynamic_delete_view, product_detail_view
+
+
+
+urlpatterns = [
+
+    path('product/', product_detail_view, name='product'),
+
+    path('product/<int:my_id>/delete',
+         dynamic_delete_view, name='product-delete'),
+    path('admin/', admin.site.urls),
+]
+
+*************Getitng the list of all objects from the database:
+
+// In views.py in Product
+
+def product_list_view(request):
+    objects_list = Product.objects.all()
+    context = {
+        "object_list": objects_list
+    }
+    return render(request, "product/product_list.html", context)
+    
+// In product_list.html:
+{% extends 'base.html' %} 
+
+{% block content %}
+ {{object_list}} 
+ 
+{% for instance in object_list %}
+<p>{{instance.id}} - {{instance.title}}</p>
+
+{% endfor %} 
+{% endblock content %}
+
+
+// In Urls.py
+urlpatterns = [
+path('allproducts/',product_list_view , name='product'),
+}
+
+
+**********************How to get absolute URL:
+// in models.py
+from django.db import models
+
+# Create your models here.
+
+
+class Product(models.Model):
+    title = models.CharField(max_length=120)
+    description = models.TextField(blank=True, null=True)
+    price = models.DecimalField(decimal_places=2, max_digits=10000)
+    summary = models.TextField()
+    featured = models.BooleanField(default=False)
+
+# Below is the way to get absolute url 
+    def get_absolute_url(self):
+        return f"product/{self.id}/"
+
+
+//In product_list.html
+
+{% extends 'base.html' %} 
+{% block content %} 
+
+{{object_list}} 
+
+{% for instance in object_list %}
+<p>
+  {{instance.id}} - <a href="{{ instance.get_absolute_url }}">{{instance.title}}</a>
+</p>
+
+{% endfor %} 
+{% endblock content %}
+
+
+******************Good practice to make your linked urls dynamic
+from django.db import models
+from django.urls import reverse
+
+# Create your models here.
+
+
+class Product(models.Model):
+    title = models.CharField(max_length=120)
+    description = models.TextField(blank=True, null=True)
+    price = models.DecimalField(decimal_places=2, max_digits=10000)
+    summary = models.TextField()
+    featured = models.BooleanField(default=False)
+
+# Below is the way to get absolute url
+    def get_absolute_url(self):
+        # syntax: reverse("name of url we defined in the path function inside url array in url.py", kwargs={key:value}) 
+        # here key is the variable in the url and value is the dynamic value from the model
+        return reverse("product", kwargs={"my_id": self.id})
+
+
+// In urls.py
+path('product/<int:my_id>/', dynamic_lookup_view, name='product'), #<-- here name='product'
+
+
+// In product_list.html
+
+{% extends 'base.html' %} 
+{% block content %} 
+
+{{object_list}} 
+
+{% for instance in object_list %}
+
+<p>
+  {{instance.id}} - <a href="{{ instance.get_absolute_url }}">{{instance.title}}</a>
+</p>
+
+{% endfor %} 
+{% endblock content %}
+
+
+NOTE: here instance.get_absolute_url will call get_absolute_url defined in models.py function. This will add redirect to product/selected_id
+
+
+*************************Refactoring the urls: Creating separate urls.py for products app
+Here we are going to create separate urls.py for our Product app to make it completely useable component:
+
+
+// Inside urls.py of product app:
+from django.urls import path
+from .views import dynamic_lookup_view, dynamic_delete_view, product_list_view, product_create_view, product_detail_view
+
+urlpatterns = [
+    path('', product_list_view, name='products'),
+    path('create/', product_create_view, name='product_create'),
+    path('<int:my_id>/', dynamic_lookup_view, name='product'),     # <-- here we are getting id dynamically
+    path('<int:my_id>/delete',
+         dynamic_delete_view, name='product-delete'),
+]
+
+
+
+NOTE: Since we have extracted our code from urls.py of the main project to the urls.py of product app so we have to make some link it with the original urls.py of the main product.
+
+
+// Im urls.py of trydjango app:
+
+from django.contrib import admin
+from django.urls import path, include
+from pages.views import home_view, contact_view
+
+urlpatterns = [
+    path('products/', include('products.urls')), #<-- include is the keyword that we used to include another URLconf
+
+    path('', home_view, name='home'),
+    path('contact/', contact_view, name='contact'),
+    path('admin/', admin.site.urls),
+]
+
+
+**********Class based views:
+Class based views are some how seems more complex than function based views. The reason is that many of the things are automated because class based views are inherite of other django built in classes. Therefore, a good knowledge is required while creating class based views:
+
+// models.py of blog app:
+from django.db import models
+from django.urls import reverse
+
+# Create your models here.
+
+
+class Article(models.Model):
+    title = models.CharField(max_length=120)
+    content = models.TextField()
+    active = models.BooleanField(default=True)
+
+    def get_absolute_url(self):
+        return reverse("article", kwargs={"pk": self.id})
+
+// forms.py of blog app:
+
+from django import forms
+from .models import Article
+
+
+class ArticleModelForm(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = [
+            'title',
+            'content',
+            'active'
+        ]
+// views.py of blog app:
+
+from django.db.models.base import Model as Model
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+    UpdateView,
+    DeleteView
+)
+
+from .models import Article
+from .forms import ArticleModelForm
+
+# Create your views here.
+
+
+class AritcleListView(ListView):
+    # here we are overriding our template names. Cuz by default django wants
+    # name something like like that  <blog>/<modelName>_list.html but we want to use our custom so:
+    template_name = 'articles/article_list.html'
+    queryset = Article.objects.all()
+    # here I do not have to do render, do not have to write template name etc. Just because of django builtin
+    # ListView. I have inherite Listview inside my ArticleListView class
+
+
+class AritcleDetailView(DetailView):
+    template_name = 'articles/article_detail.html'
+
+    def get_object(self):
+        # <-- This is how we grab id from the url in class based views
+        id_ = self.kwargs.get("pk")
+        return get_object_or_404(Article, id=id_)
+
+# note: In class based views the class views are inherite from other classes therefore, we have to override the things
+# like we have done above by using get_object()
+
+
+class AritcleCreateView(CreateView):
+    template_name = 'articles/article_create.html'
+    form_class = ArticleModelForm
+    queryset = Article.objects.all()
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super().form_valid(form)
+
+
+class AritcleUpdateView(UpdateView):
+    template_name = 'articles/article_create.html'
+    form_class = ArticleModelForm
+    queryset = Article.objects.all()
+
+    def get_object(self):
+        id_ = self.kwargs.get("pk")
+        return get_object_or_404(Article, id=id_)
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super().form_valid(form)
+
+
+class AritcleDeleteView(DeleteView):
+    template_name = 'articles/article_delete.html'
+
+    def get_object(self):
+        # <-- This is how we grab id from the url in class based views
+        id_ = self.kwargs.get("pk")
+        return get_object_or_404(Article, id=id_)
+    def get_success_url(self) :
+        return reverse('article-list')
+        
+**********************get and post method on classes:
+Class based views are mostly used as they provide inheritance features. If one class is inherited in other class then all the  methods inside that class will be called which we dont have to call separately:
+
+from django.views import View
+from .forms import CourseModelForm
+
+class CourseCreateView(View):
+
+	template_name = "course/course_create.html"
+	
+	def get(self, request, *args, **kwargs):
+		form = CourseModelForm()
+		context: {"form": form}
+		retrun render(request, self.template_name, context)
+	
+	
+	def post(self, request, *args, **kwargs):
+		form = CourseModelForm(request.POST)
+		if form.is_valid():
+			form.save()
+			form = CourseModelForm() #<-- this will just clear fields after submitting the form
+		context: {"form": form}
+		return render(request, self.template_name, context)
+		
+	
+
+***************Raw validations on class based views:
+from django import forms
+from .models import Article
+
+
+class ArticleModelForm(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = [
+            'title',
+            'content',
+            'active'
+        ]
+        
+    # syntax:def clean_<your_field_name>():
+
+    def clean_title():
+       titile = self.cleaned_data.get('title')
+       if title.lower() == 'abc':
+       	   raise forms.validationError("This is not a valid title)
+       return title
+       
+       
+****************************************************From Coding for all
+
+*************Folder structure in django
+when we create our project using:
+
+>django-admin createproject project_name
+
+Then there will be a folder of the project name will be created
+
+__init__py: This file is used to import all the modules required for running the project
+asgi: Means Asynchronous gateway interface
+wsgi: Means Web server gateway interface
+urls.py: here we manage our urls
+settings: Here we manage our project settings
+Manage.py: This file would act as a bridge to communicate with django project
+
+
+****Django app:
+
+When we create app using:
+> django-admin createapp app_name
+
+This will create a folder of the app name in your root folder
+models.py: WIll contain all our models
+views.py: WE will handle our logic here
+admin.py: This is for django admin here we can register our apps
+
+NOTE: Django apps are re-usable
+
+
+*************Running django project on a custom port
+python manage.py runserver 0.0.0.0:Your_port_number
+
+
+*********Adding created apps in settings.py:
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]
+
+EXTERNAL_APPS = [
+
+	'app1',
+	'app2'
+]
+
+
+INSTALLED_APPS += EXTERNAL_APPS
+
+       	   
+************Django_Templates:
+
+If you want to return django template in your response then you can use render() from django.shortcuts
+
+
+*************Django Models and Migrations
+Whenever we make any changes in our model file we have to make migrations:\
+> Python manage.py makemigrations
+> Python manage.py migrate
+and these migrations are create a migration file in your migrations folder
+if we would delete any file that has dependencies on other filer our database will collapse
+
+As we know our __init__ file for migration has dependency on other files if __init__ file would be deleted then database will be collapse
+
+
+*********IMPORTANT INTERVIEW QUESTION
+In practical when we are working on big projects then there will ve several models in a single project. Then in case of making any changes in a specific model and make migrations. HOw django will be get to know that this model has been update?
+
+ANSWER: If you are thinking that the django migrations compare its migrations file with the previous file then you are WRONG. The actual answer is that we run:
+>Python manage.py migrate
+
+Then django runs all migrations and then create an app state and then it compares this app state with the model state in database. (cuz migrations are also getting stored in database on running migrations) If there is nothing changes then it will say "No migrations to apply" otherwise it will update the app to the new state.
+
+
+************All About Django shell and Advance CRUD Operations:
+
+
+***************Creating data
+> from models import *
+
+*** method 1
+> Student.objects.create(name:"abc") #method 1 to create add data in schemas, you dont need to call the save method is you are using objects (model manager)
+
+
+*** method 2
+> student = Student(name:"abc") #method 2 to create add data in schemas
+> student.save() #< here you need to call the save method
+
+
+*** method 3
+> student_dict = {"name":"abc"}
+> student.objects.create(**student_dict)
+
+
+Here .objects is a model manager
+
+
+***********************Reading data
+
+Student.objects.all() // all students
+Students.objects.all()[0].name //name of the first student
+
+***If you want to show name of your student then you have to write a function in your models.py
+
+def __str__(self) str:
+	return self.name
+
+// now go to the shell
+> student.objects.all() // you will also see  the names
+
+***How to run functions that are using django resources such as models etc.
+
+If you have a file let say utils.py and it has a function namely test_function and it do some operations on your model then you cannot run it directly like doing:
+> python utils.py //ERROR
+
+
+So to run this function you have to go inside your django shell:
+
+> Python manage.py shell
+
+> from home.utils import *
+
+> test_function() //now you will get your output
+
+
+
+****Reading a specific object:
+
+> student.objects.get(id=1) // get method will raise exception and will give error if the object is not found
+> student.objects.filter(id=1) // filter method will not raise exception and will not give error if the object is not found instead it will return empty objkect
+
+
+
+
+
+********Updating the objects:
+// Method 1 (recommedned)
+> student.objects.get(id=1).update(name="new name")
+
+// Method 2
+> student = Students.objects.get(id=1)
+> student.name = "new name"
+> student.save() // here you would have to call the save() method
+
+
+
+**********Deleting the objects
+
+> student.objects.all().delete() //will delete all objects
+
+> student.objects.get(id=1).delete() // this will delete only specified object
+
+
+***************Djnago templates image file not showing issue SOLUTION:
+
+I finally fixed this issue by creating a folder directory to upload my images like:
+
+public/static/receipe
+So my settings.py would look like:
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'public/static')
+]
+MEDIA_ROOT = os.path.join(BASE_DIR, 'public/media')
+MEDIA_URL = '/media/'
+My Models.py:
+
+from django.db import models
+
+# Create your models here.
+
+
+class Receipe(models.Model):
+    receipe_name = models.CharField(max_length=100)
+    receipe_description = models.TextField()
+    receipe_Image = models.ImageField(upload_to="receipe/")
+In my receipes.html: Here do not forget to add {% load static %}
+
+ {% load static %}
+        <img src="/static/{{receipe.receipe_Image}}" height="100" width="100" />
+Now change this code according to your path and you are done :)
+
+************Format for submitting image file from front end:
+<form
+method="post"
+enctype="multipart/form-data" #<-- dont forget to add this enctype tab while submitting the form.
+>
+
+
+Purpose of enctype="multipart/form-data"
+Form Data Encoding:
+
+enctype stands for "encoding type". It specifies how the form data should be encoded when it is sent to the server.
+The default encoding type is application/x-www-form-urlencoded, which is suitable for simple text data but not for file uploads.
+Handling File Uploads:
+
+When a form includes file inputs (e.g., <input type="file">), the form data must be encoded differently to properly transmit the file data.
+multipart/form-data allows the browser to send the form data as a series of "parts", with each part representing a form field or file.
+How It Works
+Text Fields: Form fields like text inputs and textareas are encoded in a simple text format.
+Files: File input fields send the file data as a binary stream.
+Boundaries: The multipart/form-data encoding uses boundaries to separate different parts of the form data, ensuring that the text fields and file data are properly distinguished and processed by the server.
+
+**************************Django ORM
+
+>python manage.py shell
+
+// to get how many objects we have\
+> from receipe.models import Receipe
+
+> vege = Receipe.objects.all()
+
+> vege
+
+
+// updating the model field
+> for veg in vege:
+	veg.receipe_price = Random.randit(10,100)
+	veg.save()
+
+> vege[0].receipe_price
+
+
+// sorting by veg_price ascending
+
+>vege = Receipe.objects.all().order_by('receipe_price)
+
+// sorting by veg_price descending
+
+>vege = Receipe.objects.all().order_by('-receipe_price)
+
+
+// applying limits to get only the list of first 100
+
+>vege = Receipe.objects.all().order_by('-receipe_price)[0:100]
+
+
+// to get veges having price greater than 55
+
+>vege = Receipe.objects.filter(receipe_price__gte = 55)
+
+
+
+****************Trick to create multiple records to practice query. 
+
+We are gonna use module called faker.
+
+# in seed.py
+from faker import Faker
+fake = Faker()
+import random 
+from .models import *
+
+
+
+def seed_db(n=10)->None:
+	try:
+		for _ in range(n):
+			department_objs = Deparment.objects.all()
+			random_index = random.randint(0,len(deparment_objs)-1)
+			student_id = f'STU-0{random.randint(100, 999)}'
+			department = department_objs[random_index]
+			student_name = fake.name()
+			student_email = fake.email()
+			student_age = random.randint(20, 30)
+			student_address = fake.address()
+			
+			student_id_obj = StudentID.objects.create(student_id = student_id)
+			
+			student_obj = Student.objects.create(
+			department = department,
+			student_name = student_name,
+			student_email = student_email,
+			student_age = student_age,
+			student_address = student_address
+			)
+	
+
+> python manage.py shell
+
+> from vege.seed import *
+
+> seed_db()
+
+
+
+************Advance queries:
+// getting the students whose names start with "abh"
+
+> queryset = Student.objects.filter(student_name__startswith = "abh")
+
+here __startswith is a builtin method in django shell
+
+
+similary we have __endswith
+
+> queryset = Student.objects.filter(student_email__endswith = ".org")
+
+
+
+> queryset = Student.objects.filter(student_address__icontains = "Lahore")
+// This will filter the address which checks Lahore in their address
+
+**************How to acess foreign keys and nested foreign keys:
+
+In model.js
+
+from django.db import models
+
+class Department(models.Model):
+    department = models.ForeignKey(User, blank=True, null= True)
+    established_at = moedels.date()
+    
+class Student(models.Model):
+    department = models.ForeignKey(User, blank=True, null= True)
+    name = models.CharField(max_length=120)
+    achievment = models.TextField(blank=True, null=True)
+    marks = models.DecimalField(max_digits=15, decimal_places=2, default=99.99)
+
+*** // If you want to access the department key that is actually a foreign key and coming from another model
+> queryset = Student.objects.all()			
+> queryset[0].department.department // This will give you the value of department of your 1st student
+
+> queryset[0].department.established_at // This will give you the value of established at of your 1st student
+
+
+**** here when we points toward our foreign key it first point towards its model and then you have to point toward the key
+
+//If I want access the only those students whose department is civil.
+> queryset = Student.obj.filter(department__department = "CIvil")
+
+**** Here department__department is same as doing department.deprament. Its just a way to access the foreign keys. This is how you implement filters on foreign keys. If you wanted to access the establiashed_at then you can do
+
+> queryset = Student.obj.filter(department__established_at = "CIvil")
+
+*** We can also do something like that:
+> queryset = Student.obj.filter(department__department__icontains = "Civ")
+
+***** If we want to get the list of students whos department is civil or electircal
+
+> department_we_want = ['Civil', 'Electrical']
+
+> queryset = Student.objects.filter(department__department__in = department_we_want)
+
+//here __in command will compare the department string.
+
+
+************ If we want to get the list of all students of all departments except "Civil"
+
+> queryset = Student.objects.exclude(department__department = "Civil")
+
+> queryset.count() //this will count the length of the output array
+
+
+*************To check whether the data exists or not.
+> queryset = Student.obj.filter(department__department__icontains = "Civ")
+
+> queryset.exists()
+
+>//output: Either True or False
+
+
+*************If you want to get all the data of all the students displayed on the shell then you can do:
+
+> queryset = Student.objects.all()[1:100] //here we are limiting and just want only first 100
+
+> queryset.values()
+
+This will return you an array of dictionaries. So, you would be able to see keys and values.
+
+
+**********Distinct keyword:
+Inside a table, a column often contains many duplicate values; and sometimes you only want to list the different (distinct) values.
+>queryset = Student.objects.all().distinct('student_age')
+
+
+*********To access only required fields
+
+> queryset = Student.objects.values_list('id', 'student_name')
+
+//now you will only get the list containing id and student_name field. And it will return data in tuple
+
+
+*************Difference between filter and get method
+
+In case of no matching, filter will return empty array.
+where In case of get method you will get an exception error if data doesn't match. So use get method when you are damn sure that the data will 100% exist. 
+
+
+
+************Aggregations and Annotations
+Aggregations are the functions that are used to calculate the sum, avg, max, min etn.
+
+Aggregations are applied on the columns. Let say we have a table containing, id, name, price. 
+
+And here I want to sum all prices. There 1 approach is to get the value of price only and then apply for loop to do sum. This is very long process. So Aggregate functions helps us in doing so.
+
+******Annonate:
+Annoation is applied on more than one column at once. With the help of annotations we apply more than one aggregation.
+
+
+> python manage.py shell
+> from django.db.models import *
+> from .models import *
+
+>Stduent.objects.aggregate(Avg('student_age'))
+>Stduent.objects.aggregate(Max('student_age'))
+>Stduent.objects.aggregate(Min('student_age'))
+>Stduent.objects.aggregate(Sum('student_age'))
+
+
+*******Annotation:
+// What if we want to check how many students are there of different ages like how many are students of age 20 are there and so on.
+
+> Student.obj.values('student_age').annotate(Count('student_age'))
+
+
+// What if we want to check how many students are there of different names like how many are students are there of name "WIlliam" and so on.
+> Student.obj.values('student_name').annotate(Count('student_name'))
+
+// annotating more than one attribute
+> Student.obj.values('student_name', 'student_age').annotate(Count('student_name'), Count('student_age'))
+
+
+
+***********************************************************Important points from Receipe-card-projects:
+
+In models.py:
+let say we have a case of students namely Ali so Ali must have only 1 subject of let say CS. This is not possible that Ali have 2 subjects of same name. So for subject_marks we have to create a unique key by grouping student name and subject name.
+
+So in django here is how we can do that:
+
+
+class SubjectMarks(models.Model):
+	student = models.ForeignKey(Student, related_name="studentmarks", on_delete=models.CASCADE)
+	subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+	marks = models.IntegerField()
+	
+	def __str__(self) -> str:
+		return f'{self.student.student_name} {self.subject.subject_name}' #this method is used to display what ever field you want out of model.
+		
+	class Meta:
+		unique_together = ['student', 'subject'] #---> This is how you group them
+		
+		
+*********How to modify Django admin panel:
+
+#In admin.py
+
+# create a class:
+class SubjectMarkAdmin(admin.ModelAdmin):
+	list_display = ['student', 'subject','marks']  #--> here student, subject and marks are the name of fields in the models you want to display on admin home page
+
+# here list_display is default by django you have to follow it.
+
+admin.site.register(SubjectMarks, SubjectMarkAdmin)
+
+****************Pagination:
+For pagination django provides the code for both front-end and backend-as well.
+
+search on google--> django pagination.
+
+# in views.py:
+
+from django.core.paginator import Paginator
+from django.shortcuts import render
+
+from myapp.models import Contact
+
+
+def listing(request):
+    contact_list = Contact.objects.all() #--> this can be your queryset.
+    paginator = Paginator(contact_list, 25)  # Show 25 contacts per page.
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, "list.html", {"page_obj": page_obj})
+    
+    
+**************single-field search:
+def get_student(request):
+	queryset = Student.objects.all()
+	
+	if request.GET.get('search'):
+		search = request.GET.get('search')
+		search = queryset.filter( student_name__icontains = search)
+
+	return render(request, "home.html", {'queryset': queryset})
+    
+**************Multi-field search:
+from django.db.models import Q #<--for multi search you have to use Q
+
+def get_student(request):
+	queryset = Student.objects.all()
+	
+	if request.GET.get('search'):
+		search = request.GET.get('search')
+		search = queryset.filter( Q(student_name__icontains = search) | 
+					Q(student_id__student_id__icontains = search) |	
+					Q(departmentr__departmen__icontains = search) |	
+						)
+
+	return render(request, "home.html", {'queryset': queryset})
+	
+
+*******************Doing sum using Aggregate function:
+// in urls.py
+
+path('/see_marks/<student_id>')
+
+// in views.py
+from django.db.models import Sum
+
+def see_marks(request, student_id):
+	queryset = SubjectMarks.objects.filter(student__student_id__student_id = student_id) 
+	total_marks = queryset.aggregate(total_marks = Sum('marks'))
+	
+	
+NOTE: student is a foreign key it will point toward its Student model where we will be having another foreign key namely student_id, student_id will point towards it model that is StudentID which contains student_id field
+
+
+*************************how to generate rank:
+// in views.py
+from django.db.models import Sum
+
+def get_student(request, student_id):
+	queryset = Student.objects.all() 
+	current_rank = -1
+	ranks = Student.objects.annotate(marks = Sum('studentmarks_marks')).order_by('-marks', '-age')
+	
+	i = 1
+	for rank in ranks:
+		if student_id == rank.student_id.student_id
+			current_rank = i
+			break
+		i = i+1
+	
+
+NOTE: the problem here is that it will generate rank everytime. if there are millions of students then it will take so long to generate rank. So how to deal with such case?
+
+****SOLUTION: Create a separate Rank model and store them there.
+
+****************Right way to generate Rank:
+// In models.py:
+
+class ReportCard(models.Model):
+	student = models.ForeignKey(Student, related_name="studentreportcard", on_delete=models.CASCADE)
+	rank = models.IntegerField()
+	date_of_report_card_generation = models.DateField(auto_now_add = True)
+	
+	class Meta:
+		unique_together = ['student_rank', 'date_of_report_generation'] //this means that two students cannot have exact same rank and date together, either of the property will be different.
+		
+now by using the above function you would have to store ranks inside the rank field and then you can just grab the rank of the respective student.
+
+
+****************Custom user model in Django
+In Django there is already a User model given by django containing several fields. There are two type of User models in Django. 
+1) Abstract User (User)
+2) Abstract Base User (AbstractBaseUser)
+
+************Difference between abstract and base abstract user:
+In Abstract User, you get all the fields of the User and you can add upon more fields in it.
+Whereas, in base abstract user, you only have username and password and rest you will define from scratch.
+
+
+************Creating a custom user:
+//models.py of accounts folder:
+
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+
+class CustomUser(AbstractUser):
+	username = None #<--we do not want any username we want to make user on the basis of phone number
+	phone_number = models.CharField(max_length=100, unique=True)
+	email = models.EmailField(unique=True)
+	user_bio = models.CharField(max_length = 50)
+	user_profile_image = models.ImageField(upload_to="profile")
+	
+	USERENAME_FIELD = 'phone_number'  #here we are replacing our username field with phone number cuz we want to create user using phone number
+	REQUIRED_FIELDS = []
+
+
+**NOTE: when we run python manage.py createsuperuser then createsuperuser method is called. We want that on calling createsuperuser our CustomUser Class model must be used to craete the custom user.
+so to do that we have to write a manager for this user. In python by default we have two functions create_user and create_superuser, so  we have to modify both of them using manager.py
+
+
+# create a manager.py in accounts folder:
+// in manager.py:
+
+from django.contrib.auth.base_user import BaseUserManager
+
+class UserManager(BaseUserManager):
+	def create_user(self, phone_number, password = None, **extra_fields): 
+		if not phone_number:
+			raise valueError("phone number is required")
+		extra_fields['email'] = self.normalize_email(extra_fields['email'])  #<-- for making email in small letters
+		user = self.model(phone_number = phone_number, **extra_fields)
+		user.set_password(password)  #<--for hasing the password
+		user.save(using = self.db)
+		
+	def create_superuser(self, phone_number, password = None, **extra_fields): 
+		extra_fields.setdefault('is_staff', True)
+		extra_fields.setdefault('is_superuser', True)
+		extra_fields.setdefault('is_active', True)
+		
+		return self.create_user(phone_number, password, **extra_fields)
+
+# in settings.py
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
+
+// in views.py
+
+from django.contrib.auth import get_user_model
+User = get_user_model()  #<-- This step is mandatory to get the custom user
+
+
+***************Django Model Manager:
+In Django we all have seen that User.objects.all() 
+here objects is our model manager which contains several methods which we can apply on our model. But lets assume you want to create a case that in which if some user delete something then that object 
+should not be deleted from database instead there must be a field called is_deleted that should be true on deleting. And only admins can see it. 
+
+This thing can be easily achive my using Django Models.
+
+
+// In models.py
+
+class StudentManager(models.Model):
+	def get_queryset(self): #<-- this is built-in function
+	    return super().get_queryset().filter(is_deleted = False)
+
+class Student(models.Model):
+	student = models.ForeignKey(Student, related_name="studentmarks", on_delete=models.CASCADE)
+	subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+	marks = models.IntegerField()
+	
+	objects = StudentManager() #<---replacing 'objects' model manager with custom model manager
+	admin_objects = model.Manager() #<-- renaming 'objects' model to admin_objects that will return all data
+	
+	def __str__(self) -> str:
+		return f'{self.student.student_name} {self.subject.subject_name}' #this method is used to display what ever field you want out of model.
+		
+	class Meta:
+		unique_together = ['student', 'subject'] #---> This is how you group them	
+		
+#**NOTE**: now if you would run Student.objects.all() you will get only those students who have is_deleted = False and if you would run Student.admin_objects.all() you would get all students.
+
+**************Sending emails in Django:
+// in settings.py
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  #<-- here core is my project name thats why I am using django.core
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+
+
+// in utils.py
+from django.core.mail import send_mail
+from django.conf import settings
+
+def send_email_to_client():
+	subject = "This is an email from django server"
+	message = "This is the message from django server"
+	from_email = settings.EMAIL_HOST
+	recepient_list = ["abcClient@gmail.com"]
+	
+	send_mail(subject, message, from_email, recepient_list)
+	
+// in views.py
+from .utils import send_email_to_client
+
+def send_mail(request):
+	send_email_to_client()
+	return redirect('/')
+	
+	
+******************Sending emails with Attachements
+
+// in utils.py
+from django.core.mail import send_mail, EmailMessage
+from django.conf import settings
+
+def send_email_with_attachment(subject, message, recepient_list, file_path):
+	mail = EmailMessage(subject = subject, body = message, from_email = settings.EMAIL_HOST , to = ["abc@gmail.com"])
+	mail.attach_file(file_path)
+	
+// in views.py
+from .utils import send_email_with_attachment
+
+def send_mail(request):
+	subject = "This is an email from django server"
+	message = "This is the message from django server"
+	recepient_list = ["abcClient@gmail.com"]
+	file_path = f"{settings.BASE_DIR}/main.xlsx"
+	send_email_with_attachment(subject,  message, recepient_list, file_path)
+	return redirect('/')
+	
+	
+*****************Django Signals:
+Lets say you have an object namely car but you dont know its speed. Its speed would be decided later. Like you want to create a scenario that whenever the car object is created the speed function m ust be called. So if you want to do things something like this then you can use Djnago Signals.
+There are 4 types of django signals:
+
+1) pre_save
+2) post_save
+3) pre_delete
+4) post delete
+
+
+// in models.py
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+class Car(models.Model):
+	car_name = models.CharField(max_length = 500)
+	speed = models.IntegerField(default = 50)
+	
+	def __str__(self) -> str:
+		return self.car_name
+		
+
+@receiver(post_save, sender = car): #<-- here you can change the method of signals
+def call_car_api(sender, instance, **kwargs):
+ 	print("Car objected created")	
+ 	print(sender, instance, **kwargs)	
+
+
+NOTE: Now whenever Car object will be created call_car_api will be called.
+
+
+**************Completed
+
+

@@ -1,0 +1,110 @@
+{% extends "base.html" %} {% block start %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    
+      
+       <a href="/logout" class="btn btn-success">Logout</a>
+      
+    
+  </div>
+</nav>
+<h1 class="col-6 mx-auto p-4">Receipe Order Food App</h1>
+<!-- here enctype="multipart/form-data" for files-->
+ <!-- here using request you can get the information about logged in user -->
+ <h3>{{request.user}}</h3>
+ <h3>{{request.user.first_name}}</h3>
+<form
+class="col-6 mx-auto card mb-5 p-5 shadow-lg"
+method="post"
+enctype="multipart/form-data"
+>
+{% csrf_token %}
+<!-- here you have to add csrf token while making post request so that django have idea that trustes server is sending data -->
+
+<div class="mb-3">
+  <h2>Add Receipe</h2>
+  <label for="exampleInputEmail1" class="form-label">Receipe Name</label>
+  <input
+  type="text"
+  class="form-control"
+  id="name"
+  aria-describedby="emailHelp"
+  name="receipe_name"
+  />
+  </div>
+  <div class="mb-3">
+    <label for="description" class="form-label">Description</label>
+    <textarea
+    type="text"
+    class="form-control"
+    id="exampleInputPassword1"
+    name="receipe_description"
+    ></textarea>
+    </div>
+    <div class="mb-3">
+      <input name="receipe_image" type="file" class="form-control" id="file" />
+      </div>
+  <button type="submit" class="btn btn-success">Submit</button>
+  </form>
+  <hr>
+  <form class="col-6 mx-auto">
+    <label for="exampleInputEmail1" class="form-label">Search Receipe</label>
+    <input
+    type="text"
+    class="form-control mb-2"
+    id="search"
+    aria-describedby="emailHelp"
+    name="search"
+    />
+    <button type="submit" class="btn btn-primary">
+      Search
+      </button>
+  </form>
+
+      <table class="table container mx-auto mt-5 card p-5">
+        <thead>
+      
+      <tr>
+        <th class="col">#</th>
+        <th class="col">Receipe Name</th>
+        <th class="col-9">Description</th>
+        <th class="col-1">Image</th>
+        </tr>
+        </thead>
+        <tbody>
+          {% for receipe in receipes%}
+          <tr>
+            <th scope="row">{{forloop.counter}}</th>
+      <td>{{receipe.receipe_name}}</td>
+      <td>{{receipe.receipe_description}}</td>
+      <td>
+        {% load static %}
+        <img src="/static/{{receipe.receipe_Image}}" height="100" width="100" />
+
+        <td class="d-flex justify-content-between">
+          <a href="/delete-receipe/{{receipe.id}}">
+            <button class="btn btn-danger">
+              Delete
+            </button>
+
+          </a>
+          <a href="/update-receipe/{{receipe.id}}">
+            <button class="btn btn-primary">
+              Update
+            </button>
+
+          </a>
+        </td>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

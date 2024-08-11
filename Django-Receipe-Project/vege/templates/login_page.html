@@ -1,0 +1,50 @@
+{% extends "base.html" %} {% block start %}
+
+<form
+  class="container card p-5 mt-5 col-6"
+  method="post"
+  enctype="multipart/form-data"
+>
+  {% csrf_token %}
+  <h1>Login</h1>
+  {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <div class="alert alert-primary" role="alert">
+      <div {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+        {{ message }}
+      </div>
+    </div>
+    {% endfor %} {% endif %}
+  </ul>
+  <div class="form-group mt-2">
+    <label for="exampleInputEmail1">Username</label>
+    <input
+      type="text"
+      class="form-control"
+      id="Username"
+      placeholder="Enter username"
+      name="username"
+    />
+  </div>
+  <div class="form-group mt-2">
+    <label for="exampleInputPassword1">Password</label>
+    <input
+      type="password"
+      class="form-control"
+      id="password"
+      placeholder="Password"
+      name="password"
+    />
+  </div>
+  <p>
+    Don't have an account?
+    <a href="/register/" style="text-decoration: underline; color: blue"
+      >Create a new one</a
+    >
+  </p>
+
+  <button type="submit" class="btn btn-primary mt-4">Login</button>
+</form>
+
+{% endblock %}
